@@ -1,44 +1,30 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
-const contactsSliceInitial = {
-Contacts : [
-  { id: nanoid(), name: "asdffrrg", number: "34567543" },
-  { id: nanoid(), name: "jhgjhgh", number: "34567543" },
-  { id: nanoid(), name: "lkmnhjjjk", number: "34567345543" },
-],
- filter1:""
-}
+import { createSlice } from '@reduxjs/toolkit';
 
-const contactsSlice = createSlice({
-  name: "contacts",
-  initialState: contactsSliceInitial,
+
+
+
+const initialArray = [];
+
+export const contactsSlice = createSlice({
+  name: 'contacts',
+  initialState: {
+    items: [...initialArray],
+    filter: '',
+  },
   reducers: {
-    addContact(state, {payload}) {
-      const existingContact = state.Contacts.find(contact => contact.name === payload.nombre);
-
-  if (existingContact) {
-    alert("No se puede insertar el usuario");
-  } else {
-    state.Contacts.push({ id: nanoid(), name: payload.nombre, number: payload.numero });
-  }
-      },
-    DeleteContact(state, {payload}){
-      state.Contacts = state.Contacts.filter(
-        (contact) => contact.id !== payload
-      );
+    filterContacts(state, action) {
+      state.filter = action.payload;
     },
-    filtrar(state, { payload }) {
-      return {
-        ...state,
-        filter1: payload,
-        Contacts: state.Contacts.filter((contact) =>
-          contact.name.toLowerCase().includes(payload.toLowerCase())
-        ),
-      };
+    addContact(state, action) {
+      state.items.push(action.payload);
     },
-    
-    
-  }
+    deleteContact(state, action) {
+      state.items = state.items.filter(contact => {
+        return contact.id !== action.payload;
+      });
+    },
+  },
 });
 
-export const { addContact,DeleteContact,filtrar } = contactsSlice.actions;
-export const contactReducer = contactsSlice.reducer;
+export const { addContact, deleteContact, filterContacts } = contactsSlice.actions;
+export const contactReducer = contactsSlice.reducer;  ///

@@ -1,37 +1,49 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addContact } from "redux/addContacts/addContacts";
-import { filtrar } from "redux/addContacts/addContacts";
+import { nanoid } from "@reduxjs/toolkit";
+import Filter from "./Filter";
+import React from "react";
 
-const Bar = () => { 
-    const dispatch = useDispatch();  
+const Bar = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts.items);
 
-    const handleCreatecontact = (e) => {
-        e.preventDefault();
-        const {text,number} = e.target.elements;
-        if (text.value && number.value) {
-            dispatch(addContact({
-              nombre:text.value,
-              numero:number.value
-            }));
-          }
-    };
-    const filtro = (e) =>{
-      e.preventDefault();
-      
-      dispatch(filtrar(e.target.value));
-      
+  const newContactAudit = (newContact) => {
+    return contacts.filter(
+      (contact) =>
+        contact.name?.toLowerCase() === newContact.name?.toLowerCase()
+    );
+  };
+
+  const contactFormSubmitHandler = (newContact) => {
+    if (newContactAudit(newContact).length > 0) {
+      alert(`${newContact.name} is already in contacts.`);
+      return false;
+    } else {
+      dispatch(addContact(newContact));
+      return true;
     }
-    return (
-        <form onSubmit={handleCreatecontact}>
-          <h3>Add Contact</h3>
-          <input type="text" placeholder="Add Contact" name="text" />
-          <input type="text" placeholder="Number" name="number" />
-          <input type="text" placeholder="filter" name="filetro" onChange={filtro}/>
-          <button type="submit">Add task</button>
-        </form>
-      );
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const id = nanoid();
+    const name = form.elements.name.value;
+    const number = form.elements.number.value;
+    if (contactFormSubmitHandler({ id, name, number })) {
+      form.reset();
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h3>Add Contact</h3>
+      <input type="text" placeholder="Add Contact" name="name" />
+      <input type="text" placeholder="Number" name="number" />
+      <Filter /> {/* Agregar el componente Filter aquí */}
+      <button type="submit">Add task</button>
+    </form>
+  );
 };
-
-
-
 export default Bar;
